@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Ingosi</string>
+    <string name="welcome">Bienvenue !</string>
+    <string name="login_txt">Pour vous connectez, il suffit de passer votre carte de bibliothèque
+        à l\'arrière de votre appareil.</string>
+    <string name="item_return">Retour</string>
+</resources>
