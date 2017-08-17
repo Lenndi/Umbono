@@ -4,4 +4,15 @@
     <string name="login_txt">Pour vous connectez, il suffit de passer votre carte de bibliothèque
         à l\'arrière de votre appareil.</string>
     <string name="item_return">Retour</string>
+    <string name="unknown_card">Votre carte n\'est pas enregistrée dans votre bibliothèque</string>
+    <string name="api_error">Problème avec le serveur distant</string>
+    <string name="user_not_found">La carte n\'est pas reconnue</string>
+    <string name="no_rfid">Votre appareil ne peut pas lire votre carte de bibliothèque</string>
+    <string name="turn_on_rfid">
+        Veuillez activer le NFC de votre appareil avant d\'utiliser l\'application
+    </string>
+    <string name="no_loan">Pas d\'emprunts en cours</string>
+    <string name="cnx_error">Impossible de se connecter à votre bibliothèque, vérifiez les
+        identifiants utilisés par votre application ou les données de connection à Umtapo.
+    </string>
 </resources>
