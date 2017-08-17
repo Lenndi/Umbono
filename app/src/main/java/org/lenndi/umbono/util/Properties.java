@@ -6,11 +6,11 @@ import android.content.SharedPreferences;
 public class Properties {
 
     private static final String PREF_FILE = "preferences";
-    private static final String APP_USERNAME = "admin";
-    private static final String APP_PASSWORD = "admin";
+    private static final String APP_USERNAME = "ingosi";
+    private static final String APP_PASSWORD = "ingosi";
     private static final String JWT_TOKEN_KEY = "jwt_token";
     private static final String API_URL_KEY = "api_url";
-    private static final String API_URL = "http://10.3.8.145:8080";
+    private static final String API_URL = "http://192.168.1.29:8080";
     private static final String USER_UID_KEY = "user_uid";
 
     private SharedPreferences sharedPreferences;

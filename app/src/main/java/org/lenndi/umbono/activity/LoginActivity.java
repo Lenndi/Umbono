@@ -16,6 +16,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.lenndi.umbono.R;
+import org.lenndi.umbono.util.JwtManager;
 import org.lenndi.umbono.util.LogTag;
 import org.lenndi.umbono.util.Properties;
 
@@ -25,20 +26,20 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private Properties properties;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        this.properties = new Properties(this);
 
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (nfcAdapter == null) {
-            String noRfidMsg = "Votre appareil ne peut pas lire votre carte de bibliothèque";
-            Toast.makeText(this, noRfidMsg, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_rfid, Toast.LENGTH_LONG).show();
         } else if (!nfcAdapter.isEnabled()) {
-            String turnOnRfid =
-                    "Veuillez activer le NFC de votre appareil avant d'utiliser l'application";
-            Toast.makeText(this, turnOnRfid, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.turn_on_rfid, Toast.LENGTH_LONG).show();
         }
       }
 
@@ -46,15 +47,22 @@ public class LoginActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        final Properties properties = new Properties(this);
-
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         String uid = this.bin2hex(tag.getId());
-        properties.setUserUid(uid);
+        this.properties.setUserUid(uid);
 
+        // Carte test : 501F9A7C
         //Toast.makeText(this, uid, Toast.LENGTH_LONG).show();
 
-        String loansUrl = properties.getApiUrl() + "/users/" + properties.getUserUid() + "/loans";
+        this.switchToLoanActivity();
+    }
+
+    private void switchToLoanActivity() {
+        String loansUrl = String.format(
+                "%s/uid/borrowers/%s/loans",
+                this.properties.getApiUrl(),
+                this.properties.getUserUid());
+
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest request = new StringRequest(
                 Request.Method.GET,
@@ -70,7 +78,26 @@ public class LoginActivity extends AppCompatActivity {
                 new com.android.volley.Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(LogTag.API_TAG, "Can't get user's loans");
+                        if (error.networkResponse.statusCode == 401) {
+                            JwtManager jwtManager = new JwtManager(LoginActivity.this);
+                            int returnCode = jwtManager.jwtRequest();
+
+                            if (returnCode == 0) {
+                                LoginActivity.this.switchToLoanActivity();
+                            }
+                        } else if (error.networkResponse.statusCode == 404) {
+                            Toast.makeText(
+                                    LoginActivity.this,
+                                    R.string.user_not_found,
+                                    Toast.LENGTH_LONG).show();
+                            Log.e(LogTag.API_TAG, "User not found");
+                        } else {
+                            Toast.makeText(
+                                    LoginActivity.this,
+                                    R.string.api_error,
+                                    Toast.LENGTH_LONG).show();
+                            Log.e(LogTag.API_TAG, "Api error");
+                        }
                     }
                 })  {
 
